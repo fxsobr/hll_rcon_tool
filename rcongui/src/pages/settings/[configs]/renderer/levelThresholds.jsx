@@ -2,50 +2,21 @@ import { withJsonFormsControlProps } from "@jsonforms/react";
 import {
   Box,
   Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Chip,
-  Divider,
   FormControl,
   FormHelperText,
-  Grid,
   IconButton,
   InputLabel,
   MenuItem,
-  Paper,
   Select,
   Stack,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { rankWith, scopeEndsWith } from "@jsonforms/core";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useState } from "react";
-
-
-const AVAILABLE_ROLES = [
-  { value: "armycommander", label: "Commander" },
-  { value: "officer", label: "Squad Lead" },
-  { value: "rifleman", label: "Rifleman" },
-  { value: "assault", label: "Assault" },
-  { value: "automaticrifleman", label: "Automatic Rifleman" },
-  { value: "medic", label: "Medic" },
-  { value: "support", label: "Support" },
-  { value: "heavymachinegunner", label: "Machinegunner" },
-  { value: "antitank", label: "Anti-Tank" },
-  { value: "engineer", label: "Engineer" },
-  { value: "tankcommander", label: "Tank Commander" },
-  { value: "crewman", label: "Crewman" },
-  { value: "spotter", label: "Spotter" },
-  { value: "sniper", label: "Sniper" },
-  { value: "artilleryobserver", label: "Artillery Observer" },
-  { value: "artilleryengineer", label: "Artillery Engineer" },
-  { value: "artillerysupport", label: "Artillery Support" },
-];
+import { getAllRoles, getRoleLabel } from "@/constants/roles";
 
 const LevelThresholdsRenderer = (props) => {
   const { data, handleChange, path, label, description, errors } = props;
@@ -53,7 +24,8 @@ const LevelThresholdsRenderer = (props) => {
 
   const thresholds = data || {};
   const configuredRoles = Object.keys(thresholds);
-  const availableRolesToAdd = AVAILABLE_ROLES.filter(
+  const allRoles = getAllRoles();
+  const availableRolesToAdd = allRoles.filter(
     (role) => !configuredRoles.includes(role.value)
   );
 
@@ -63,7 +35,7 @@ const LevelThresholdsRenderer = (props) => {
     const newThresholds = {
       ...thresholds,
       [selectedRole]: {
-        label: AVAILABLE_ROLES.find((r) => r.value === selectedRole)?.label || selectedRole,
+        label: getRoleLabel(selectedRole),
         min_players: 0,
         min_level: 0,
       },
@@ -92,186 +64,105 @@ const LevelThresholdsRenderer = (props) => {
 
   return (
     <FormControl fullWidth margin="normal" error={errors && errors.length > 0}>
-      <Box sx={{ mb: 3 }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-          <Typography variant="h6" fontWeight="600">
-            {label || "Role Level Thresholds"}
-          </Typography>
-          <Tooltip title="Configure minimum level requirements for specific roles based on server population">
-            <InfoOutlinedIcon fontSize="small" color="action" />
-          </Tooltip>
-        </Stack>
-        {description && (
-          <Typography variant="body2" color="text.secondary">
-            {description}
-          </Typography>
-        )}
-      </Box>
+      <InputLabel shrink sx={{ position: "relative", transform: "none", mb: 1 }}>
+        {label || "level_thresholds"}
+      </InputLabel>
+      {description && (
+        <FormHelperText sx={{ mt: 0, mb: 2 }}>{description}</FormHelperText>
+      )}
 
-      <Stack spacing={2.5}>
-        {configuredRoles.length > 0 ? (
-          <Grid container spacing={2}>
-            {configuredRoles.map((roleKey) => {
-              const roleConfig = thresholds[roleKey];
-              const roleLabel = AVAILABLE_ROLES.find((r) => r.value === roleKey)?.label || roleKey;
+      <Stack spacing={2}>
+        {configuredRoles.map((roleKey) => {
+          const roleConfig = thresholds[roleKey];
+          const roleLabel = getRoleLabel(roleKey);
 
-              return (
-                <Grid item xs={12} md={6} key={roleKey}>
-                  <Card
-                    elevation={2}
-                    sx={{
-                      height: '100%',
-                      transition: 'all 0.2s',
-                      '&:hover': {
-                        elevation: 4,
-                        transform: 'translateY(-2px)',
-                      }
-                    }}
+          return (
+            <Box
+              key={roleKey}
+              sx={{
+                p: 2,
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: 1,
+              }}
+            >
+              <Stack spacing={2}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                  <Typography variant="subtitle2" fontWeight="medium">
+                    {roleLabel}
+                  </Typography>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleRemoveRole(roleKey)}
+                    aria-label={`Remove ${roleLabel}`}
                   >
-                    <CardHeader
-                      title={
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Typography variant="subtitle1" fontWeight="600">
-                            {roleLabel}
-                          </Typography>
-                          <Chip
-                            label={roleKey}
-                            size="small"
-                            variant="outlined"
-                            sx={{ fontSize: '0.7rem', height: 20 }}
-                          />
-                        </Stack>
-                      }
-                      action={
-                        <Tooltip title="Remove role threshold">
-                          <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => handleRemoveRole(roleKey)}
-                            aria-label={`Remove ${roleLabel}`}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        </Tooltip>
-                      }
-                      sx={{ pb: 1 }}
-                    />
-                    <Divider />
-                    <CardContent>
-                      <Stack spacing={2.5}>
-                        <TextField
-                          fullWidth
-                          label="Display Label"
-                          value={roleConfig.label || ""}
-                          onChange={(e) => handleUpdateRole(roleKey, "label", e.target.value)}
-                          size="small"
-                          variant="outlined"
-                        />
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Stack>
 
-                        <Box>
-                          <TextField
-                            fullWidth
-                            type="number"
-                            label="Minimum Players"
-                            value={roleConfig.min_players ?? 0}
-                            onChange={(e) => handleUpdateRole(roleKey, "min_players", e.target.value)}
-                            inputProps={{ min: 0, max: 100 }}
-                            size="small"
-                          />
-                          <FormHelperText>
-                            Minimum server population for this threshold to apply
-                          </FormHelperText>
-                        </Box>
+                <TextField
+                  fullWidth
+                  label="Label"
+                  value={roleConfig.label || ""}
+                  onChange={(e) => handleUpdateRole(roleKey, "label", e.target.value)}
+                  size="small"
+                />
 
-                        <Box>
-                          <TextField
-                            fullWidth
-                            type="number"
-                            label="Minimum Level"
-                            value={roleConfig.min_level ?? 0}
-                            onChange={(e) => handleUpdateRole(roleKey, "min_level", e.target.value)}
-                            inputProps={{ min: 0, max: 500 }}
-                            size="small"
-                          />
-                          <FormHelperText>
-                            Required player level to use this role
-                          </FormHelperText>
-                        </Box>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-        ) : (
-          <Paper
-            elevation={0}
-            sx={{
-              p: 4,
-              textAlign: "center",
-              bgcolor: "action.hover",
-              borderRadius: 2,
-              border: '2px dashed',
-              borderColor: 'divider'
-            }}
-          >
-            <Typography variant="body1" color="text.secondary" fontWeight="500">
-              No role thresholds configured
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              Add a role below to set level requirements
-            </Typography>
-          </Paper>
-        )}
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Min Players"
+                  value={roleConfig.min_players ?? 0}
+                  onChange={(e) => handleUpdateRole(roleKey, "min_players", e.target.value)}
+                  inputProps={{ min: 0, max: 100 }}
+                  size="small"
+                />
+
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Min Level"
+                  value={roleConfig.min_level ?? 0}
+                  onChange={(e) => handleUpdateRole(roleKey, "min_level", e.target.value)}
+                  inputProps={{ min: 0, max: 500 }}
+                  size="small"
+                />
+              </Stack>
+            </Box>
+          );
+        })}
 
         {availableRolesToAdd.length > 0 && (
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2.5,
-              bgcolor: "primary.50",
-              border: '1px solid',
-              borderColor: 'primary.200',
-              borderRadius: 2
-            }}
-          >
-            <Stack spacing={2}>
-              <Typography variant="subtitle2" fontWeight="600" color="primary.main">
-                Add New Role Threshold
-              </Typography>
-              <Stack direction="row" spacing={2} alignItems="flex-start">
-                <FormControl fullWidth size="small">
-                  <InputLabel>Select Role</InputLabel>
-                  <Select
-                    value={selectedRole}
-                    onChange={(e) => setSelectedRole(e.target.value)}
-                    label="Select Role"
-                  >
-                    {availableRolesToAdd.map((role) => (
-                      <MenuItem key={role.value} value={role.value}>
-                        {role.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddRole}
-                  disabled={!selectedRole}
-                  sx={{ minWidth: 100, height: 40 }}
-                >
-                  Add
-                </Button>
-              </Stack>
-            </Stack>
-          </Paper>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <FormControl fullWidth size="small">
+              <InputLabel>Add Role</InputLabel>
+              <Select
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.target.value)}
+                label="Add Role"
+              >
+                {availableRolesToAdd.map((role) => (
+                  <MenuItem key={role.value} value={role.value}>
+                    {role.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddRole}
+              disabled={!selectedRole}
+              sx={{ minWidth: 80 }}
+            >
+              Add
+            </Button>
+          </Stack>
         )}
       </Stack>
 
       {errors && errors.length > 0 && (
-        <FormHelperText error sx={{ mt: 2 }}>{errors}</FormHelperText>
+        <FormHelperText error>{errors}</FormHelperText>
       )}
     </FormControl>
   );
