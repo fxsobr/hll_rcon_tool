@@ -1,16 +1,3 @@
-/**
- * Hell Let Loose - Roles Constants
- * 
- * This file contains all available roles in Hell Let Loose.
- * Source: rcon/types.py - Roles enum and ROLES_TO_LABELS
- * 
- * Keep this file in sync with the backend Python definitions.
- */
-
-/**
- * Role values (internal identifiers)
- * These match the values used by the game and backend API
- */
 export const ROLES = {
   COMMANDER: "armycommander",
   SQUAD_LEAD: "officer",
@@ -31,10 +18,6 @@ export const ROLES = {
   ARTILLERY_SUPPORT: "artillerysupport",
 };
 
-/**
- * Mapping of role values to display labels
- * Source: rcon/types.py - ROLES_TO_LABELS
- */
 export const ROLES_TO_LABELS = {
   [ROLES.COMMANDER]: "Commander",
   [ROLES.SQUAD_LEAD]: "Squad Lead",
@@ -55,12 +38,7 @@ export const ROLES_TO_LABELS = {
   [ROLES.ARTILLERY_SUPPORT]: "Artillery Support",
 };
 
-/**
- * Get all available roles as an array of {value, label} objects
- * Ordered to match rcon/utils.py - ALL_ROLES
- * 
- * @returns {Array<{value: string, label: string}>} Array of role objects
- */
+
 export const getAllRoles = () => [
   { value: ROLES.COMMANDER, label: ROLES_TO_LABELS[ROLES.COMMANDER] },
   { value: ROLES.SQUAD_LEAD, label: ROLES_TO_LABELS[ROLES.SQUAD_LEAD] },
@@ -81,43 +59,7 @@ export const getAllRoles = () => [
   { value: ROLES.ARTILLERY_SUPPORT, label: ROLES_TO_LABELS[ROLES.ARTILLERY_SUPPORT] },
 ];
 
-/**
- * Get the display label for a role value
- * 
- * @param {string} roleValue - The role value (e.g., "armycommander")
- * @returns {string} The display label (e.g., "Commander") or the role value if not found
- */
 export const getRoleLabel = (roleValue) => {
   return ROLES_TO_LABELS[roleValue] || roleValue;
-};
-
-/**
- * Check if a role value is valid
- * 
- * @param {string} roleValue - The role value to check
- * @returns {boolean} True if the role is valid
- */
-export const isValidRole = (roleValue) => {
-  return Object.values(ROLES).includes(roleValue);
-};
-
-/**
- * Leadership roles (can lead squads or command)
- */
-export const LEADER_ROLES = [
-  ROLES.COMMANDER,
-  ROLES.SQUAD_LEAD,
-  ROLES.TANK_COMMANDER,
-  ROLES.SPOTTER,
-];
-
-/**
- * Check if a role is a leadership role
- * 
- * @param {string} roleValue - The role value to check
- * @returns {boolean} True if the role is a leadership role
- */
-export const isLeaderRole = (roleValue) => {
-  return LEADER_ROLES.includes(roleValue);
 };
 
