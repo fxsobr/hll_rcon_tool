@@ -68,98 +68,94 @@ const LevelThresholdsRenderer = (props) => {
         {label || "level_thresholds"}
       </InputLabel>
       {description && (
-        <FormHelperText sx={{ mt: 0, mb: 2 }}>{description}</FormHelperText>
+        <FormHelperText sx={{ mt: 0, mb: 1 }}>{description}</FormHelperText>
       )}
 
-      <Stack spacing={2}>
-        {configuredRoles.map((roleKey) => {
+      <Box sx={{ mt: 1 }}>
+        {configuredRoles.map((roleKey, index) => {
           const roleConfig = thresholds[roleKey];
           const roleLabel = getRoleLabel(roleKey);
 
           return (
-            <Box
-              key={roleKey}
-              sx={{
-                p: 2,
-                border: "1px solid",
-                borderColor: "divider",
-                borderRadius: 1,
-              }}
-            >
-              <Stack spacing={2}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="subtitle2" fontWeight="medium">
-                    {roleLabel}
-                  </Typography>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleRemoveRole(roleKey)}
-                    aria-label={`Remove ${roleLabel}`}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                </Stack>
-
-                <TextField
-                  fullWidth
-                  label="Label"
-                  value={roleConfig.label || ""}
-                  onChange={(e) => handleUpdateRole(roleKey, "label", e.target.value)}
+            <Box key={roleKey} sx={{ mb: 2 }}>
+              <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ mb: 1 }}>
+                <Typography variant="body2" sx={{ pt: 1, minWidth: 120 }}>
+                  {roleLabel}
+                </Typography>
+                <Box sx={{ flex: 1 }}>
+                  <Stack spacing={1}>
+                    <TextField
+                      fullWidth
+                      label="Label"
+                      value={roleConfig.label || ""}
+                      onChange={(e) => handleUpdateRole(roleKey, "label", e.target.value)}
+                      size="small"
+                    />
+                    <Stack direction="row" spacing={1}>
+                      <TextField
+                        label="Min Players"
+                        type="number"
+                        value={roleConfig.min_players ?? 0}
+                        onChange={(e) => handleUpdateRole(roleKey, "min_players", e.target.value)}
+                        inputProps={{ min: 0, max: 100 }}
+                        size="small"
+                        sx={{ flex: 1 }}
+                      />
+                      <TextField
+                        label="Min Level"
+                        type="number"
+                        value={roleConfig.min_level ?? 0}
+                        onChange={(e) => handleUpdateRole(roleKey, "min_level", e.target.value)}
+                        inputProps={{ min: 0, max: 500 }}
+                        size="small"
+                        sx={{ flex: 1 }}
+                      />
+                    </Stack>
+                  </Stack>
+                </Box>
+                <IconButton
                   size="small"
-                />
-
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Min Players"
-                  value={roleConfig.min_players ?? 0}
-                  onChange={(e) => handleUpdateRole(roleKey, "min_players", e.target.value)}
-                  inputProps={{ min: 0, max: 100 }}
-                  size="small"
-                />
-
-                <TextField
-                  fullWidth
-                  type="number"
-                  label="Min Level"
-                  value={roleConfig.min_level ?? 0}
-                  onChange={(e) => handleUpdateRole(roleKey, "min_level", e.target.value)}
-                  inputProps={{ min: 0, max: 500 }}
-                  size="small"
-                />
+                  onClick={() => handleRemoveRole(roleKey)}
+                  aria-label={`Remove ${roleLabel}`}
+                  sx={{ mt: 0.5 }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
               </Stack>
             </Box>
           );
         })}
 
         {availableRolesToAdd.length > 0 && (
-          <Stack direction="row" spacing={1} alignItems="center">
-            <FormControl fullWidth size="small">
-              <InputLabel>Add Role</InputLabel>
-              <Select
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value)}
-                label="Add Role"
-              >
-                {availableRolesToAdd.map((role) => (
-                  <MenuItem key={role.value} value={role.value}>
-                    {role.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1 }}>
+            <Select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              size="small"
+              displayEmpty
+              sx={{ minWidth: 200 }}
+            >
+              <MenuItem value="" disabled>
+                Select role...
+              </MenuItem>
+              {availableRolesToAdd.map((role) => (
+                <MenuItem key={role.value} value={role.value}>
+                  {role.label}
+                </MenuItem>
+              ))}
+            </Select>
             <Button
-              variant="contained"
+              variant="text"
               startIcon={<AddIcon />}
               onClick={handleAddRole}
               disabled={!selectedRole}
-              sx={{ minWidth: 80 }}
+              size="small"
             >
               Add
             </Button>
           </Stack>
         )}
-      </Stack>
+      </Box>
 
       {errors && errors.length > 0 && (
         <FormHelperText error>{errors}</FormHelperText>
