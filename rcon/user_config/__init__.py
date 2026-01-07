@@ -18,6 +18,7 @@ if not os.getenv("HLL_MAINTENANCE_CONTAINER") and not os.getenv(
         ban_tk_on_connect,
         camera_notification,
         chat_commands,
+        conditional_actions,
         expired_vips,
         gtx_server_name,
         log_line_webhooks,

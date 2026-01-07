@@ -154,6 +154,7 @@ export const cmd = {
   GET_SEEDING_REWARD_CONFIG: (params) => requestFactory({ method: "GET", cmd: "get_seed_vip_config", ...params }),
   GET_CHAT_COMMANDS_CONFIG: (params) => requestFactory({ method: "GET", cmd: "get_chat_commands_config", ...params }),
   GET_RCON_CHAT_COMMANDS_CONFIG: (params) => requestFactory({ method: "GET", cmd: "get_rcon_chat_commands_config", ...params }),
+  GET_CONDITIONAL_ACTIONS_CONFIG: (params) => requestFactory({ method: "GET", cmd: "get_conditional_actions_config", ...params }),
   GET_ONLINE_PLAYERS: (params) => requestFactory({ method: "GET", cmd: "get_players", ...params }),
   GET_PERMISSIONS: (params) => requestFactory({ method: "GET", cmd: "get_own_user_permissions", ...params }),
   GET_PLAYER: (params) => requestFactory({ method: "GET", cmd: "get_player_profile", ...params }),
@@ -213,6 +214,7 @@ export const cmd = {
   SET_VOTEMAP_WHITELIST: (params) => requestFactory({ method: "POST", cmd: "set_votemap_whitelist", ...params }),
   SET_WARMUP_TIMER: (params) => requestFactory({ method: "POST", cmd: "set_warmup_timer", ...params }),
   SET_WELCOME_MESSAGE: (params) => requestFactory({ method: "POST", cmd: "set_welcome_message", ...params }),
+  SET_CONDITIONAL_ACTIONS_CONFIG: (params) => requestFactory({ method: "POST", cmd: "set_conditional_actions_config", ...params }),
   TOGGLE_SERVICE: (params) => requestFactory({ method: "POST", cmd: "do_service", ...params }),
   UNFLAG_PLAYER: (params) => requestFactory({ method: "POST", cmd: "unflag_player", ...params }),
   // Files

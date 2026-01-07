@@ -112,6 +112,10 @@ import { action as consoleAdminSettingsAction } from "./pages/settings/console-a
 import VipSettings from "./pages/settings/vip"
 import { loader as vipLoader } from "./pages/settings/vip"
 
+import ConditionalActionsSettings from "./pages/settings/conditional-actions"
+import { loader as conditionalActionsLoader } from "./pages/settings/conditional-actions"
+import { action as conditionalActionsAction } from "./pages/settings/conditional-actions"
+
 import { AuthProvider } from "@/hooks/useAuth";
 import { GlobalState } from "./stores/global-state";
 import RouteError from "@/components/shared/RouteError";
@@ -311,6 +315,14 @@ const router = createBrowserRouter([
                 element: <AutoSettings />,
                 loader: autosettingsLoader,
                 action: autosettingsAction,
+                errorElement: <RouteError />,
+            },
+            {
+                path: 'settings/conditional-actions',
+                handle: { crumb: () => <span>Conditional Actions</span> },
+                element: <ConditionalActionsSettings />,
+                loader: conditionalActionsLoader,
+                action: conditionalActionsAction,
                 errorElement: <RouteError />,
             },
             {

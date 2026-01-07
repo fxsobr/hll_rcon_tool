@@ -48,6 +48,7 @@ import DvrIcon from "@mui/icons-material/Dvr";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import SearchIcon from "@mui/icons-material/Search";
+import RuleIcon from "@mui/icons-material/Rule";
 
 export const navMenus = [
   {
@@ -175,6 +176,11 @@ export const navMenus = [
         name: "Autosettings",
         to: "/settings/autosettings",
         icon: <SettingsSuggestIcon />,
+      },
+      {
+        name: "Conditional Actions",
+        to: "/settings/conditional-actions",
+        icon: <RuleIcon />,
       },
     ],
   },

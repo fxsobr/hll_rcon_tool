@@ -2028,3 +2028,41 @@ class RconAPI(Rcon):
             "squad_name": squad_name,
             "msg": f"Successfully disbaned {squad_name} squad in team {team_name}"
         }
+
+    def get_conditional_actions_config(self):
+        from rcon.user_config.conditional_actions import ConditionalActionsUserConfig
+        return ConditionalActionsUserConfig.load_from_db()
+
+    def validate_conditional_actions_config(
+        self,
+        by: str,
+        config: dict[str, Any] | BaseUserConfig | None = None,
+        reset_to_default: bool = False,
+        **kwargs,
+    ) -> None:
+        from rcon.user_config.conditional_actions import ConditionalActionsUserConfig
+        return self._validate_user_config(
+            command_name=inspect.currentframe().f_code.co_name,  # type: ignore
+            by=by,
+            model=ConditionalActionsUserConfig,
+            data=config or kwargs,
+            dry_run=True,
+            reset_to_default=reset_to_default,
+        )
+
+    def set_conditional_actions_config(
+        self,
+        by: str,
+        config: dict[str, Any] | BaseUserConfig | None = None,
+        reset_to_default: bool = False,
+        **kwargs,
+    ) -> None:
+        from rcon.user_config.conditional_actions import ConditionalActionsUserConfig
+        return self._validate_user_config(
+            command_name=inspect.currentframe().f_code.co_name,  # type: ignore
+            by=by,
+            model=ConditionalActionsUserConfig,
+            data=config or kwargs,
+            dry_run=False,
+            reset_to_default=reset_to_default,
+        )

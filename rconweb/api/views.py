@@ -662,6 +662,9 @@ ENDPOINT_PERMISSIONS: dict[Callable, list[str] | set[str] | str] = {
     rcon_api.reset_webhook_queue: "api.can_change_webhook_queues",
     rcon_api.reset_webhook_queue_type: "api.can_change_webhook_queues",
     rcon_api.reset_webhook_message_type: "api.can_change_webhook_queues",
+    rcon_api.get_conditional_actions_config: "api.can_view_conditional_actions_config",
+    rcon_api.set_conditional_actions_config: "api.can_change_conditional_actions_config",
+    rcon_api.validate_conditional_actions_config: "api.can_change_conditional_actions_config",
 }
 
 PREFIXES_TO_EXPOSE = [
@@ -722,6 +725,7 @@ RCON_ENDPOINT_HTTP_METHODS: dict[Callable, list[str]] = {
     rcon_api.get_chat_commands_config: ["GET"],
     rcon_api.get_rcon_chat_commands_config: ["GET"],
     rcon_api.get_chat_discord_webhooks_config: ["GET"],
+    rcon_api.get_conditional_actions_config: ["GET"],
     rcon_api.get_map_sequence: ["GET"],
     rcon_api.get_detailed_player_info: ["GET"],
     rcon_api.get_detailed_players: ["GET"],
@@ -825,6 +829,7 @@ RCON_ENDPOINT_HTTP_METHODS: dict[Callable, list[str]] = {
     rcon_api.set_chat_commands_config: ["POST"],
     rcon_api.set_rcon_chat_commands_config: ["POST"],
     rcon_api.set_chat_discord_webhooks_config: ["POST"],
+    rcon_api.set_conditional_actions_config: ["POST"],
     rcon_api.set_expired_vip_config: ["POST"],
     rcon_api.set_game_layout: ["POST"],
     rcon_api.set_idle_autokick_time: ["POST"],
@@ -880,6 +885,7 @@ RCON_ENDPOINT_HTTP_METHODS: dict[Callable, list[str]] = {
     rcon_api.validate_chat_commands_config: ["POST"],
     rcon_api.validate_rcon_chat_commands_config: ["POST"],
     rcon_api.validate_chat_discord_webhooks_config: ["POST"],
+    rcon_api.validate_conditional_actions_config: ["POST"],
     rcon_api.validate_expired_vip_config: ["POST"],
     rcon_api.validate_kills_discord_webhooks_config: ["POST"],
     rcon_api.validate_log_line_webhook_config: ["POST"],

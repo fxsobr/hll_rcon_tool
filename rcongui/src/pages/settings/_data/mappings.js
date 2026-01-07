@@ -86,6 +86,11 @@ export const others = [
     name: "RCON Chat Commands Settings",
   },
   {
+    path: "/settings/conditional-actions",
+    command: "conditional_actions_config",
+    name: "Conditional Actions",
+  },
+  {
     path: "/settings/others/scoreboard",
     command: "scoreboard_config",
     name: "Scoreboard",
