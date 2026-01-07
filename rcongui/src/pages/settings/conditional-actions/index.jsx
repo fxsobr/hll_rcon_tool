@@ -13,6 +13,8 @@ import {
   Chip,
   Alert,
   AlertTitle,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -79,6 +81,11 @@ const ConditionalActionsPage = () => {
     const newRules = [...(config?.rules || [])];
     newRules.splice(index, 1);
     const newConfig = { ...config, rules: newRules };
+    handleSaveConfig(newConfig);
+  };
+
+  const handleToggleSystem = () => {
+    const newConfig = { ...config, enabled: !config.enabled };
     handleSaveConfig(newConfig);
   };
 
@@ -202,14 +209,27 @@ const ConditionalActionsPage = () => {
                 Create automated rules that trigger actions based on player and game conditions
               </Typography>
             </Box>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={handleAddRule}
-              disabled={!config}
-            >
-              Add Rule
-            </Button>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={config?.enabled || false}
+                    onChange={handleToggleSystem}
+                    disabled={!config}
+                    color="primary"
+                  />
+                }
+                label={config?.enabled ? "System Enabled" : "System Disabled"}
+              />
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleAddRule}
+                disabled={!config}
+              >
+                Add Rule
+              </Button>
+            </Stack>
           </Stack>
         </Paper>
 

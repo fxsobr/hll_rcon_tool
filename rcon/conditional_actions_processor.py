@@ -158,6 +158,8 @@ class ConditionalActionsProcessor:
         field_value = self._get_field_value(condition.field, player_id, player_info, gamestate)
         target_value = condition.value
 
+        logger.debug(f"Evaluating: {condition.field} {condition.operator} '{target_value}' (field_value='{field_value}')")
+
         if field_value is None:
             logger.debug(f"Field {condition.field} returned None, condition fails")
             return False
@@ -179,7 +181,9 @@ class ConditionalActionsProcessor:
         try:
             comparison_func = comparison_ops.get(condition.operator)
             if comparison_func:
-                return comparison_func(field_value, target_value)
+                result = comparison_func(field_value, target_value)
+                logger.debug(f"Condition result: {result}")
+                return result
 
             logger.warning(f"Unknown operator: {condition.operator}")
             return False
@@ -200,6 +204,8 @@ class ConditionalActionsProcessor:
             for cond in rule.conditions
         ]
 
+        logger.debug(f"[{rule.name}] Condition results: {results}, Logical operator: {rule.logical_operator}")
+
         logical_ops = {
             LogicalOperator.AND: lambda r: all(r),
             LogicalOperator.OR: lambda r: any(r),
@@ -209,7 +215,9 @@ class ConditionalActionsProcessor:
 
         logical_func = logical_ops.get(rule.logical_operator)
         if logical_func:
-            return logical_func(results)
+            result = logical_func(results)
+            logger.debug(f"[{rule.name}] Final evaluation result: {result}")
+            return result
 
         logger.warning(f"Unknown logical operator: {rule.logical_operator}")
         return False
@@ -380,7 +388,10 @@ class ConditionalActionsProcessor:
         config = ConditionalActionsUserConfig.load_from_db()
 
         if not config.enabled:
+            logger.debug(f"Conditional actions system is disabled")
             return
+
+        logger.debug(f"Processing event {trigger_event} for player {player_id}")
 
         try:
             players = self.rcon.get_detailed_players()
@@ -390,7 +401,11 @@ class ConditionalActionsProcessor:
             logger.error(f"Failed to get player/game data: {e}")
             return
 
+        matching_rules = [rule for rule in config.rules if rule.trigger_event.value == trigger_event]
+        logger.debug(f"Found {len(matching_rules)} rules for event {trigger_event}")
+
         for rule in config.rules:
             if rule.trigger_event.value == trigger_event:
+                logger.debug(f"Processing rule: {rule.name}")
                 self.process_rule(rule, player_id, player_info, gamestate)
 
