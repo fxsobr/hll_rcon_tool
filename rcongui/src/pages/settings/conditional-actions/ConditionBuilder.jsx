@@ -13,6 +13,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const CONDITION_FIELDS = [
+  { value: "always_true", label: "Always True (No Condition)", type: "boolean" },
   { value: "player_name", label: "Player Name", type: "string" },
   { value: "player_id", label: "Player ID", type: "string" },
   { value: "player_level", label: "Player Level", type: "number" },

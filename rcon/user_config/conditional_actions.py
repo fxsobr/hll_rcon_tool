@@ -21,6 +21,7 @@ class TriggerEvent(str, Enum):
 
 
 class ConditionField(str, Enum):
+    ALWAYS_TRUE = "always_true"
     PLAYER_NAME = "player_name"
     PLAYER_ID = "player_id"
     PLAYER_LEVEL = "player_level"

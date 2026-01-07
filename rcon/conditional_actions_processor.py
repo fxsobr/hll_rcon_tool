@@ -76,6 +76,10 @@ class ConditionalActionsProcessor:
         player_info: GetDetailedPlayer | None = None,
         gamestate: GameStateType | None = None,
     ) -> Any:
+        # Special field that always returns True
+        if field == ConditionField.ALWAYS_TRUE:
+            return True
+
         simple_player_fields = {
             ConditionField.PLAYER_NAME: lambda: player_info["name"] if player_info else None,
             ConditionField.PLAYER_ID: lambda: player_id,

@@ -93,9 +93,9 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
       conditions: [
         ...formData.conditions,
         {
-          field: "player_name",
+          field: "always_true",
           operator: "equal",
-          value: "",
+          value: true,
         },
       ],
     });

@@ -112,9 +112,9 @@ import { action as consoleAdminSettingsAction } from "./pages/settings/console-a
 import VipSettings from "./pages/settings/vip"
 import { loader as vipLoader } from "./pages/settings/vip"
 
-import ConditionalActionsSettings from "./pages/settings/conditional-actions"
-import { loader as conditionalActionsLoader } from "./pages/settings/conditional-actions"
-import { action as conditionalActionsAction } from "./pages/settings/conditional-actions"
+import ConditionalActionsSettings from "./pages/settings/conditional-actions-new"
+import { loader as conditionalActionsLoader } from "./pages/settings/conditional-actions-new"
+import { action as conditionalActionsAction } from "./pages/settings/conditional-actions-new"
 
 import { AuthProvider } from "@/hooks/useAuth";
 import { GlobalState } from "./stores/global-state";
