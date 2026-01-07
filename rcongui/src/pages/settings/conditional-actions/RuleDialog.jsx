@@ -28,22 +28,22 @@ import ConditionBuilder from "./ConditionBuilder";
 import ActionBuilder from "./ActionBuilder";
 
 const TRIGGER_EVENTS = [
-  { value: "PLAYER_CONNECTED", label: "Player Connected" },
-  { value: "PLAYER_DISCONNECTED", label: "Player Disconnected" },
-  { value: "PLAYER_KILL", label: "Player Kill" },
-  { value: "PLAYER_DEATH", label: "Player Death" },
-  { value: "PLAYER_TEAM_KILL", label: "Player Team Kill" },
-  { value: "MATCH_START", label: "Match Start" },
-  { value: "MATCH_END", label: "Match End" },
-  { value: "PLAYER_CHAT", label: "Player Chat" },
-  { value: "PLAYER_TEAM_SWITCH", label: "Player Team Switch" },
+  { value: "player_connected", label: "Player Connected" },
+  { value: "player_disconnected", label: "Player Disconnected" },
+  { value: "player_kill", label: "Player Kill" },
+  { value: "player_death", label: "Player Death" },
+  { value: "player_team_kill", label: "Player Team Kill" },
+  { value: "match_start", label: "Match Start" },
+  { value: "match_end", label: "Match End" },
+  { value: "player_chat", label: "Player Chat" },
+  { value: "player_team_switch", label: "Player Team Switch" },
 ];
 
 const LOGICAL_OPERATORS = [
-  { value: "AND", label: "AND - All conditions must be met" },
-  { value: "OR", label: "OR - Any condition must be met" },
-  { value: "NAND", label: "NAND - Not all conditions are met" },
-  { value: "NOR", label: "NOR - None of the conditions are met" },
+  { value: "and", label: "AND - All conditions must be met" },
+  { value: "or", label: "OR - Any condition must be met" },
+  { value: "nand", label: "NAND - Not all conditions are met" },
+  { value: "nor", label: "NOR - None of the conditions are met" },
 ];
 
 const RuleDialog = ({ open, rule, onClose, onSave }) => {
@@ -51,8 +51,8 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
     name: "",
     description: "",
     enabled: true,
-    trigger_event: "PLAYER_CONNECTED",
-    logical_operator: "AND",
+    trigger_event: "player_connected",
+    logical_operator: "and",
     conditions: [],
     actions: [],
     cooldown_seconds: 0,
@@ -67,8 +67,8 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
         name: "",
         description: "",
         enabled: true,
-        trigger_event: "PLAYER_CONNECTED",
-        logical_operator: "AND",
+        trigger_event: "player_connected",
+        logical_operator: "and",
         conditions: [],
         actions: [],
         cooldown_seconds: 0,
@@ -91,8 +91,8 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
       conditions: [
         ...formData.conditions,
         {
-          field: "PLAYER_NAME",
-          operator: "EQUAL",
+          field: "player_name",
+          operator: "equal",
           value: "",
         },
       ],
@@ -117,7 +117,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
       actions: [
         ...formData.actions,
         {
-          action_type: "MESSAGE_PLAYER",
+          action_type: "message_player",
           parameters: { message: "" },
         },
       ],

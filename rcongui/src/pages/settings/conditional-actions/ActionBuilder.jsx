@@ -14,27 +14,27 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 const ACTION_TYPES = [
   {
-    value: "MESSAGE_PLAYER",
+    value: "message_player",
     label: "Message Player",
     params: [{ name: "message", label: "Message", type: "text", required: true }],
   },
   {
-    value: "MESSAGE_ALL_PLAYERS",
+    value: "message_all_players",
     label: "Message All Players",
     params: [{ name: "message", label: "Message", type: "text", required: true }],
   },
   {
-    value: "KICK_PLAYER",
+    value: "kick_player",
     label: "Kick Player",
     params: [{ name: "reason", label: "Reason", type: "text", required: true }],
   },
   {
-    value: "PUNISH_PLAYER",
+    value: "punish_player",
     label: "Punish Player",
     params: [{ name: "reason", label: "Reason", type: "text", required: true }],
   },
   {
-    value: "TEMP_BAN_PLAYER",
+    value: "temp_ban_player",
     label: "Temporary Ban Player",
     params: [
       { name: "reason", label: "Reason", type: "text", required: true },
@@ -42,12 +42,12 @@ const ACTION_TYPES = [
     ],
   },
   {
-    value: "PERMA_BAN_PLAYER",
+    value: "perma_ban_player",
     label: "Permanent Ban Player",
     params: [{ name: "reason", label: "Reason", type: "text", required: true }],
   },
   {
-    value: "ADD_PLAYER_FLAG",
+    value: "add_player_flag",
     label: "Add Player Flag",
     params: [
       { name: "flag", label: "Flag", type: "text", required: true },
@@ -55,22 +55,22 @@ const ACTION_TYPES = [
     ],
   },
   {
-    value: "REMOVE_PLAYER_FLAG",
+    value: "remove_player_flag",
     label: "Remove Player Flag",
     params: [{ name: "flag", label: "Flag", type: "text", required: true }],
   },
   {
-    value: "ADD_TO_WATCHLIST",
+    value: "add_to_watchlist",
     label: "Add to Watchlist",
     params: [{ name: "reason", label: "Reason", type: "text", required: true }],
   },
   {
-    value: "BROADCAST_MESSAGE",
+    value: "broadcast_message",
     label: "Set Broadcast Message",
     params: [{ name: "message", label: "Message", type: "text", required: true }],
   },
   {
-    value: "TEMPORARY_BROADCAST",
+    value: "temporary_broadcast",
     label: "Temporary Broadcast",
     params: [
       { name: "message", label: "Message", type: "text", required: true },
@@ -78,7 +78,7 @@ const ACTION_TYPES = [
     ],
   },
   {
-    value: "SEND_DISCORD_WEBHOOK",
+    value: "send_discord_webhook",
     label: "Send Discord Webhook",
     params: [
       { name: "webhook_url", label: "Webhook URL", type: "text", required: true },
@@ -86,7 +86,7 @@ const ACTION_TYPES = [
     ],
   },
   {
-    value: "SWITCH_PLAYER_TEAM",
+    value: "switch_player_team",
     label: "Switch Player Team",
     params: [],
   },
