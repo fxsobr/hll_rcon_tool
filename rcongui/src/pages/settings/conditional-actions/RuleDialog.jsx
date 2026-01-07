@@ -48,6 +48,7 @@ const LOGICAL_OPERATORS = [
 
 const RuleDialog = ({ open, rule, onClose, onSave }) => {
   const [formData, setFormData] = useState({
+    id: null,
     name: "",
     description: "",
     enabled: true,
@@ -64,6 +65,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
       setFormData(rule);
     } else {
       setFormData({
+        id: null,
         name: "",
         description: "",
         enabled: true,
@@ -149,7 +151,14 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
       alert("Please add at least one action");
       return;
     }
-    onSave(formData);
+
+    // Generate ID if it doesn't exist (new rule)
+    const ruleToSave = {
+      ...formData,
+      id: formData.id || `rule_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    };
+
+    onSave(ruleToSave);
   };
 
   return (
