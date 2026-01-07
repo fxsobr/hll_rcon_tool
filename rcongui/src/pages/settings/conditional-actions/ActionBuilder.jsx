@@ -9,6 +9,8 @@ import {
   IconButton,
   Typography,
   Box,
+  Tooltip,
+  Chip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -130,10 +132,22 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
   };
 
   return (
-    <Paper variant="outlined" sx={{ p: 2, bgcolor: "action.hover" }}>
-      <Stack spacing={2}>
-        <Stack direction="row" spacing={2} alignItems="flex-start">
-          <FormControl sx={{ minWidth: 250 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 2.5,
+        borderRadius: 2,
+        bgcolor: "background.default",
+        '&:hover': {
+          boxShadow: 2,
+          borderColor: 'secondary.main',
+        },
+        transition: 'all 0.2s',
+      }}
+    >
+      <Stack spacing={2.5}>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <FormControl sx={{ minWidth: 280 }} size="small">
             <InputLabel>Action Type</InputLabel>
             <Select
               value={action.action_type}
@@ -148,15 +162,36 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
             </Select>
           </FormControl>
 
+          {params.length > 0 && (
+            <Chip
+              label={`${params.length} parameter${params.length > 1 ? 's' : ''}`}
+              size="small"
+              color="info"
+              variant="outlined"
+            />
+          )}
+
           <Box sx={{ flexGrow: 1 }} />
 
-          <IconButton color="error" onClick={onDelete} size="small">
-            <DeleteIcon />
-          </IconButton>
+          <Tooltip title="Delete action">
+            <IconButton
+              color="error"
+              onClick={onDelete}
+              size="small"
+              sx={{
+                '&:hover': {
+                  bgcolor: 'error.light',
+                  color: 'error.contrastText',
+                }
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
         </Stack>
 
         {params.length > 0 && (
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={{ pl: 1 }}>
             {params.map((param) => (
               <TextField
                 key={param.name}
@@ -166,11 +201,12 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
                 type={param.type === "number" ? "number" : "text"}
                 required={param.required}
                 fullWidth
+                size="small"
                 multiline={param.type === "text" && param.name === "message"}
                 rows={param.type === "text" && param.name === "message" ? 3 : 1}
                 helperText={
                   param.name === "message"
-                    ? "You can use variables like {player_name}, {kills}, {deaths}, etc."
+                    ? "💡 You can use variables like {player_name}, {kills}, {deaths}, etc."
                     : undefined
                 }
               />
@@ -179,8 +215,8 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
         )}
 
         {params.length === 0 && (
-          <Typography variant="body2" color="text.secondary">
-            This action requires no additional parameters.
+          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', pl: 1 }}>
+            ℹ️ This action requires no additional parameters.
           </Typography>
         )}
       </Stack>

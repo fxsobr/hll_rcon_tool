@@ -21,9 +21,13 @@ import {
   RadioGroup,
   Radio,
   FormLabel,
+  Chip,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SaveIcon from "@mui/icons-material/Save";
+import CloseIcon from "@mui/icons-material/Close";
 import ConditionBuilder from "./ConditionBuilder";
 import ActionBuilder from "./ActionBuilder";
 
@@ -162,22 +166,53 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
-      <DialogTitle>{rule ? "Edit Rule" : "Create New Rule"}</DialogTitle>
-      <DialogContent>
-        <Stack spacing={3} sx={{ mt: 1 }}>
-          {/* Basic Info */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Basic Information
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        elevation: 8,
+        sx: { borderRadius: 2 }
+      }}
+    >
+      <DialogTitle sx={{ pb: 1 }}>
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <Box>
+            <Typography variant="h5" component="span">
+              {rule ? "Edit Rule" : "Create New Rule"}
             </Typography>
-            <Stack spacing={2}>
+            {formData.enabled !== undefined && (
+              <Chip
+                label={formData.enabled ? "Enabled" : "Disabled"}
+                color={formData.enabled ? "success" : "default"}
+                size="small"
+                sx={{ ml: 2 }}
+              />
+            )}
+          </Box>
+          <IconButton onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Stack>
+      </DialogTitle>
+      <Divider />
+      <DialogContent sx={{ pt: 3 }}>
+        <Stack spacing={3}>
+          {/* Basic Info */}
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom color="primary" fontWeight={600}>
+              📋 Basic Information
+            </Typography>
+            <Stack spacing={2.5} sx={{ mt: 2 }}>
               <TextField
                 label="Rule Name"
                 value={formData.name}
                 onChange={handleChange("name")}
                 fullWidth
                 required
+                variant="outlined"
+                placeholder="e.g., Welcome Message for VIPs"
               />
               <TextField
                 label="Description"
@@ -186,25 +221,32 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 fullWidth
                 multiline
                 rows={2}
+                variant="outlined"
+                placeholder="Optional description of what this rule does"
               />
               <FormControlLabel
                 control={
                   <Switch
                     checked={formData.enabled}
                     onChange={handleSwitchChange("enabled")}
+                    color="success"
                   />
                 }
-                label="Enabled"
+                label={
+                  <Typography variant="body2">
+                    {formData.enabled ? "Rule is active" : "Rule is inactive"}
+                  </Typography>
+                }
               />
             </Stack>
           </Paper>
 
           {/* Trigger Event */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Trigger Event
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom color="primary" fontWeight={600}>
+              ⚡ Trigger Event
             </Typography>
-            <FormControl fullWidth>
+            <FormControl fullWidth sx={{ mt: 2 }}>
               <InputLabel>When should this rule be evaluated?</InputLabel>
               <Select
                 value={formData.trigger_event}
@@ -221,32 +263,43 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
           </Paper>
 
           {/* Conditions */}
-          <Paper sx={{ p: 2 }}>
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h6">Conditions</Typography>
-              <Button startIcon={<AddIcon />} onClick={handleAddCondition} size="small">
+              <Typography variant="h6" color="primary" fontWeight={600}>
+                🎯 Conditions
+              </Typography>
+              <Button
+                startIcon={<AddIcon />}
+                onClick={handleAddCondition}
+                variant="outlined"
+                size="small"
+              >
                 Add Condition
               </Button>
             </Stack>
 
             {formData.conditions.length > 0 && (
-              <FormControl component="fieldset" sx={{ mb: 2 }}>
-                <FormLabel component="legend">Logical Operator</FormLabel>
-                <RadioGroup
-                  row
-                  value={formData.logical_operator}
-                  onChange={handleChange("logical_operator")}
-                >
-                  {LOGICAL_OPERATORS.map((op) => (
-                    <FormControlLabel
-                      key={op.value}
-                      value={op.value}
-                      control={<Radio />}
-                      label={op.label}
-                    />
-                  ))}
-                </RadioGroup>
-              </FormControl>
+              <Box sx={{ mb: 3, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+                <FormControl component="fieldset">
+                  <FormLabel component="legend" sx={{ fontWeight: 600, mb: 1 }}>
+                    Logical Operator (how to combine conditions)
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    value={formData.logical_operator}
+                    onChange={handleChange("logical_operator")}
+                  >
+                    {LOGICAL_OPERATORS.map((op) => (
+                      <FormControlLabel
+                        key={op.value}
+                        value={op.value}
+                        control={<Radio size="small" />}
+                        label={<Typography variant="body2">{op.label}</Typography>}
+                      />
+                    ))}
+                  </RadioGroup>
+                </FormControl>
+              </Box>
             )}
 
             <Stack spacing={2}>
@@ -260,18 +313,25 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 </Box>
               ))}
               {formData.conditions.length === 0 && (
-                <Typography color="text.secondary" align="center">
+                <Alert severity="info" sx={{ mt: 1 }}>
                   No conditions added. Click "Add Condition" to create one.
-                </Typography>
+                </Alert>
               )}
             </Stack>
           </Paper>
 
           {/* Actions */}
-          <Paper sx={{ p: 2 }}>
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-              <Typography variant="h6">Actions</Typography>
-              <Button startIcon={<AddIcon />} onClick={handleAddAction} size="small">
+              <Typography variant="h6" color="primary" fontWeight={600}>
+                ⚙️ Actions
+              </Typography>
+              <Button
+                startIcon={<AddIcon />}
+                onClick={handleAddAction}
+                variant="outlined"
+                size="small"
+              >
                 Add Action
               </Button>
             </Stack>
@@ -286,19 +346,19 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 </Box>
               ))}
               {formData.actions.length === 0 && (
-                <Typography color="text.secondary" align="center">
+                <Alert severity="info" sx={{ mt: 1 }}>
                   No actions added. Click "Add Action" to create one.
-                </Typography>
+                </Alert>
               )}
             </Stack>
           </Paper>
 
           {/* Advanced Settings */}
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>
-              Advanced Settings
+          <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom color="primary" fontWeight={600}>
+              ⚙️ Advanced Settings
             </Typography>
-            <Stack spacing={2}>
+            <Stack spacing={2.5} sx={{ mt: 2 }}>
               <TextField
                 label="Cooldown (seconds)"
                 type="number"
@@ -306,6 +366,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 onChange={handleChange("cooldown_seconds")}
                 fullWidth
                 helperText="Minimum time between executions for the same player (0 = no cooldown)"
+                InputProps={{ inputProps: { min: 0 } }}
               />
               <TextField
                 label="Max Executions Per Player"
@@ -314,14 +375,27 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 onChange={handleChange("max_executions_per_player")}
                 fullWidth
                 helperText="Maximum times this rule can execute for a player (0 = unlimited)"
+                InputProps={{ inputProps: { min: 0 } }}
               />
             </Stack>
           </Paper>
         </Stack>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSave} variant="contained">
+      <Divider />
+      <DialogActions sx={{ p: 2.5, gap: 1 }}>
+        <Button
+          onClick={onClose}
+          variant="outlined"
+          startIcon={<CloseIcon />}
+        >
+          Cancel
+        </Button>
+        <Button
+          onClick={handleSave}
+          variant="contained"
+          startIcon={<SaveIcon />}
+          size="large"
+        >
           Save Rule
         </Button>
       </DialogActions>

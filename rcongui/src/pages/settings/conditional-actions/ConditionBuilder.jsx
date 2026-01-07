@@ -9,6 +9,8 @@ import {
   IconButton,
   Checkbox,
   FormControlLabel,
+  Tooltip,
+  Box,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
@@ -111,9 +113,21 @@ const ConditionBuilder = ({ condition, onChange, onDelete }) => {
   };
 
   return (
-    <Paper variant="outlined" sx={{ p: 2 }}>
+    <Paper
+      variant="outlined"
+      sx={{
+        p: 2.5,
+        borderRadius: 2,
+        bgcolor: 'background.default',
+        '&:hover': {
+          boxShadow: 2,
+          borderColor: 'primary.main',
+        },
+        transition: 'all 0.2s',
+      }}
+    >
       <Stack direction="row" spacing={2} alignItems="center">
-        <FormControl sx={{ minWidth: 200 }}>
+        <FormControl sx={{ minWidth: 220 }} size="small">
           <InputLabel>Field</InputLabel>
           <Select value={condition.field} onChange={handleFieldChange} label="Field">
             {CONDITION_FIELDS.map((field) => (
@@ -124,7 +138,7 @@ const ConditionBuilder = ({ condition, onChange, onDelete }) => {
           </Select>
         </FormControl>
 
-        <FormControl sx={{ minWidth: 180 }}>
+        <FormControl sx={{ minWidth: 180 }} size="small">
           <InputLabel>Operator</InputLabel>
           <Select value={condition.operator} onChange={handleOperatorChange} label="Operator">
             {operators.map((op) => (
@@ -136,28 +150,44 @@ const ConditionBuilder = ({ condition, onChange, onDelete }) => {
         </FormControl>
 
         {fieldType === "boolean" ? (
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={condition.value === true}
-                onChange={handleValueChange}
-              />
-            }
-            label="True"
-          />
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', pl: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={condition.value === true}
+                  onChange={handleValueChange}
+                  color="primary"
+                />
+              }
+              label="True"
+            />
+          </Box>
         ) : (
           <TextField
             label="Value"
             value={condition.value}
             onChange={handleValueChange}
             type={fieldType === "number" ? "number" : "text"}
+            size="small"
             sx={{ flexGrow: 1 }}
           />
         )}
 
-        <IconButton color="error" onClick={onDelete} size="small">
-          <DeleteIcon />
-        </IconButton>
+        <Tooltip title="Delete condition">
+          <IconButton
+            color="error"
+            onClick={onDelete}
+            size="small"
+            sx={{
+              '&:hover': {
+                bgcolor: 'error.light',
+                color: 'error.contrastText',
+              }
+            }}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
       </Stack>
     </Paper>
   );
