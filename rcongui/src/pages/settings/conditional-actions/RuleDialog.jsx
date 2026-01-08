@@ -185,7 +185,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
             {formData.enabled !== undefined && (
               <Chip
                 label={formData.enabled ? "Enabled" : "Disabled"}
-                color={formData.enabled ? "success" : "default"}
+                color={formData.enabled ? "primary" : "default"}
                 size="small"
                 sx={{ ml: 2 }}
               />
@@ -202,7 +202,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
           {/* Basic Info */}
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom color="primary" fontWeight={600}>
-              📋 Basic Information
+              Basic Information
             </Typography>
             <Stack spacing={2.5} sx={{ mt: 2 }}>
               <TextField
@@ -229,7 +229,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                   <Switch
                     checked={formData.enabled}
                     onChange={handleSwitchChange("enabled")}
-                    color="success"
+                    color="primary"
                   />
                 }
                 label={
@@ -244,7 +244,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
           {/* Trigger Event */}
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom color="primary" fontWeight={600}>
-              ⚡ Trigger Event
+              Trigger Event
             </Typography>
             <FormControl fullWidth sx={{ mt: 2 }}>
               <InputLabel>When should this rule be evaluated?</InputLabel>
@@ -266,7 +266,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6" color="primary" fontWeight={600}>
-                🎯 Conditions
+                Conditions
               </Typography>
               <Button
                 startIcon={<AddIcon />}
@@ -324,7 +324,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
               <Typography variant="h6" color="primary" fontWeight={600}>
-                ⚙️ Actions
+                Actions
               </Typography>
               <Button
                 startIcon={<AddIcon />}
@@ -356,7 +356,7 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
           {/* Advanced Settings */}
           <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom color="primary" fontWeight={600}>
-              ⚙️ Advanced Settings
+              Advanced Settings
             </Typography>
             <Stack spacing={2.5} sx={{ mt: 2 }}>
               <TextField

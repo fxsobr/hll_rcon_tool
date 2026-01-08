@@ -123,20 +123,12 @@ const ConditionalActionsPage = () => {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <Tooltip title={params.value ? "Click to disable" : "Click to enable"}>
-          <IconButton
-            size="small"
-            onClick={() => handleToggleRule(params.row.index)}
-            color={params.value ? "success" : "default"}
-            sx={{
-              '&:hover': {
-                backgroundColor: params.value ? 'success.light' : 'action.hover',
-              }
-            }}
-          >
-            {params.value ? <PlayArrowIcon /> : <PauseIcon />}
-          </IconButton>
-        </Tooltip>
+        <Switch
+          checked={params.value}
+          onChange={() => handleToggleRule(params.row.index)}
+          size="small"
+          color="primary"
+        />
       ),
     },
     {
@@ -182,7 +174,7 @@ const ConditionalActionsPage = () => {
         <Chip
           label={`${params.value}`}
           size="small"
-          color="info"
+          color="default"
           sx={{ minWidth: 40 }}
         />
       ),
@@ -198,7 +190,7 @@ const ConditionalActionsPage = () => {
         <Chip
           label={`${params.value}`}
           size="small"
-          color="secondary"
+          color="default"
           sx={{ minWidth: 40 }}
         />
       ),
@@ -279,14 +271,14 @@ const ConditionalActionsPage = () => {
                       checked={config?.enabled || false}
                       onChange={handleToggleSystem}
                       disabled={!config}
-                      color="success"
+                      color="primary"
                       size="medium"
                     />
                   }
                   label={
                     <Chip
-                      label={config?.enabled ? "System Enabled" : "System Disabled"}
-                      color={config?.enabled ? "success" : "default"}
+                      label={config?.enabled ? "Enabled" : "Disabled"}
+                      color={config?.enabled ? "primary" : "default"}
                       size="small"
                     />
                   }
@@ -343,7 +335,8 @@ const ConditionalActionsPage = () => {
                       },
                     }}
                     pageSizeOptions={[10, 25, 50, 100]}
-                    disableSelectionOnClick
+                    disableRowSelectionOnClick
+                    checkboxSelection={false}
                     autoHeight
                     sx={{
                       border: 'none',
@@ -366,41 +359,7 @@ const ConditionalActionsPage = () => {
           </Await>
         </Suspense>
 
-        {/* Stats Card */}
-        {config && (
-          <Card elevation={1} sx={{ backgroundColor: 'background.default' }}>
-            <CardContent>
-              <Stack direction="row" spacing={4} justifyContent="center">
-                <Box textAlign="center">
-                  <Typography variant="h4" color="primary">
-                    {config.rules?.length || 0}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Total Rules
-                  </Typography>
-                </Box>
-                <Divider orientation="vertical" flexItem />
-                <Box textAlign="center">
-                  <Typography variant="h4" color="success.main">
-                    {config.rules?.filter(r => r.enabled).length || 0}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Active Rules
-                  </Typography>
-                </Box>
-                <Divider orientation="vertical" flexItem />
-                <Box textAlign="center">
-                  <Typography variant="h4" color="text.secondary">
-                    {config.rules?.filter(r => !r.enabled).length || 0}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Inactive Rules
-                  </Typography>
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
-        )}
+
       </Stack>
 
       {dialogOpen && (

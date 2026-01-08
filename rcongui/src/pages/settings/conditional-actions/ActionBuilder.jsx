@@ -140,7 +140,7 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
         bgcolor: "background.default",
         '&:hover': {
           boxShadow: 2,
-          borderColor: 'secondary.main',
+          borderColor: 'primary.main',
         },
         transition: 'all 0.2s',
       }}
@@ -166,7 +166,7 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
             <Chip
               label={`${params.length} parameter${params.length > 1 ? 's' : ''}`}
               size="small"
-              color="info"
+              color="default"
               variant="outlined"
             />
           )}
@@ -206,7 +206,7 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
                 rows={param.type === "text" && param.name === "message" ? 3 : 1}
                 helperText={
                   param.name === "message"
-                    ? "💡 You can use variables like {player_name}, {kills}, {deaths}, etc."
+                    ? "You can use variables like {player_name}, {kills}, {deaths}, etc."
                     : undefined
                 }
               />
@@ -216,7 +216,7 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
 
         {params.length === 0 && (
           <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic', pl: 1 }}>
-            ℹ️ This action requires no additional parameters.
+            This action requires no additional parameters.
           </Typography>
         )}
       </Stack>
