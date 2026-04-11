@@ -180,6 +180,11 @@ const router = createBrowserRouter([
                         errorElement: <RouteError />,
                         children: [
                             {
+                                path: '',
+                                element: <PlayerProfileDetail />,
+                                errorElement: <RouteError />,
+                            },
+                            {
                                 path: ':detail',
                                 element: <PlayerProfileDetail />,
                                 errorElement: <RouteError />,
@@ -191,6 +196,13 @@ const router = createBrowserRouter([
                                 loader: playerLogsLoader,
                             }
                         ]
+                    },
+                    {
+                        path: 'vips',
+                        handle: { crumb: () => <Link to={'/records/vips'}>Vips</Link> },
+                        loader: vipLoader,
+                        element: <VipSettings />,
+                        errorElement: <RouteError />,
                     },
                     {
                         path: 'blacklists',
@@ -268,13 +280,6 @@ const router = createBrowserRouter([
                 element: <ServicesSettings />,
                 loader: servicesLoader,
                 action: servicesAction,
-                errorElement: <RouteError />,
-            },
-            {
-                path: 'settings/vip',
-                handle: { crumb: () => <Link to={'/settings/vip'}>Vip</Link> },
-                loader: vipLoader,
-                element: <VipSettings />,
                 errorElement: <RouteError />,
             },
             {

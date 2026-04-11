@@ -17,6 +17,7 @@ from rcon.cache_utils import get_redis_client, invalidates, ttl_cache
 from rcon.commands import HLLCommandFailedError, ServerCtl, VipId
 from rcon.maps import UNKNOWN_MAP_NAME, Layer, is_server_loading_map, parse_layer
 from rcon.models import PlayerID, PlayerVIP, enter_session, GameLayout
+from rcon.perf_statistics import PerformanceStatistics
 from rcon.player_history import get_profiles, safe_save_player_action, save_player, get_player_profile
 from rcon.settings import SERVER_INFO
 from rcon.types import (
@@ -31,6 +32,7 @@ from rcon.types import (
     GetPlayersType,
     ParsedLogsType,
     PlayerActionState,
+    PlayerInfoType,
     ServerInfoType,
     SlotsType,
     StatusType,
@@ -194,15 +196,21 @@ class Rcon(ServerCtl):
     def __init__(self, *args, pool_size: bool | None = None, **kwargs):
         config = RconConnectionSettingsUserConfig.load_from_db()
         super().__init__(
-            *args, **kwargs
+            *args, **kwargs, perf_stats=PerformanceStatistics("rcon", config.performance_statistics_enabled)
         )
         if pool_size is not None:
             self.pool_size = pool_size
         else:
             self.pool_size = config.thread_pool_size
 
+        self._config = config
         self._current_map = parse_layer(UNKNOWN_MAP_NAME)
         self._next_map = parse_layer(UNKNOWN_MAP_NAME)
+
+    def performance_stats_interval(self) -> int:
+        if self._config.performance_statistics_enabled:
+            return self._config.performance_statistics_interval_seconds
+        return 0
 
     @property
     def current_map(self) -> Layer:
@@ -296,7 +304,7 @@ class Rcon(ServerCtl):
             except Exception:
                 logger.error("Failed to get info for %s", player_id)
                 fail_count += 1
-                player_data = default_player_info_dict(player[NAME])
+                player_data = default_player_info_dict()
 
             player_data.update(player)  # type: ignore
             
@@ -441,7 +449,7 @@ class Rcon(ServerCtl):
                 return "recon"
             if player.get("role") in ["armycommander"]:
                 return "commander"
-            if player.get("role") in ["artilleryobserver", "artilleryengineer", "artillerysupport"]:
+            if player.get("role") in ["artilleryobserver", "operator", "gunner"]:
                 return "artillery"
 
         return "infantry"
@@ -488,15 +496,13 @@ class Rcon(ServerCtl):
     @ttl_cache(ttl=2, cache_falsy=False)
     def get_detailed_player_info(self, player_id: str, player: GetPlayersType | None = None) -> GetDetailedPlayer:
         try:
-            raw = super().get_player_info(player_id)
+            player_info = super().get_player_info(player_id)
         except HLLCommandError:
             raise HLLCommandFailedError("Player is not online")
-        return self._get_detailed_player_info(raw, player)
+        return self._get_detailed_player_info(player_info, player)
 
-    def _get_detailed_player_info(
-        self, raw: dict[str, Any], player: GetPlayersType | None = None
-    ) -> GetDetailedPlayer:
-        player_data = parse_raw_player_info(raw)
+    def _get_detailed_player_info(self, player_info: PlayerInfoType, player: GetPlayersType | None = None) -> GetDetailedPlayer:
+        player_data = parse_raw_player_info(player_info)
         if player is not None and 'is_vip' in player:
             player_data["is_vip"] = player.get('is_vip')
         else:

@@ -112,6 +112,11 @@ export const navMenus = [
         icon: <PeopleIcon />,
       },
       {
+        name: "Vips",
+        to: "/records/vips",
+        icon: <GradeIcon />,
+      },
+      {
         name: "Blacklist",
         to: "/records/blacklists",
         icon: <AccountBalanceIcon />,
@@ -156,11 +161,6 @@ export const navMenus = [
         name: "Console Admins",
         to: "/settings/console-admins",
         icon: <AdminPanelSettingsIcon />,
-      },
-      {
-        name: "Vips",
-        to: "/settings/vip",
-        icon: <GradeIcon />,
       },
       {
         name: "Templates",
