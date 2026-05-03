@@ -134,6 +134,12 @@ def watch_killrate():
         sys.exit(1)
 
 
+@cli.command(name="conditional_actions")
+def run_conditional_actions():
+    import rcon.conditional_actions.service
+    rcon.conditional_actions.service.run()
+
+
 @cli.command(name="automod")
 def run_automod():
     automod.run()

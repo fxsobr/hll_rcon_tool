@@ -39,6 +39,7 @@ def get_services(request):
         "log_event_loop": "Blacklist enforcement, chat/kill forwarding, player history, etc...",
         "log_stream": "Optionally store game server logs in a redis stream",
         "auto_settings": "Applies commands automaticaly based on your rules.",
+        "conditional_actions": "Conditional automation rules engine. Evaluates triggers, conditions, and actions.",
         "cron": "The scheduler, cleans logs and whatever you added.",
     }
     client = get_supervisor_client()

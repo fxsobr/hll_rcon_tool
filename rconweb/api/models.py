@@ -476,4 +476,12 @@ class RconUser(User):
                 "can_change_watch_killrate_config",
                 "Can change the Watch KillRate config",
             ),
+            (
+                "can_view_conditional_actions_config",
+                "Can view the Conditional Actions config",
+            ),
+            (
+                "can_change_conditional_actions_config",
+                "Can change the Conditional Actions config",
+            ),
         )

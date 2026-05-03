@@ -37,10 +37,10 @@ const TRIGGER_EVENTS = [
   { value: "player_kill", label: "Player Kill" },
   { value: "player_death", label: "Player Death" },
   { value: "player_team_kill", label: "Player Team Kill" },
+  { value: "player_chat", label: "Player Chat" },
   { value: "match_start", label: "Match Start" },
   { value: "match_end", label: "Match End" },
-  { value: "player_chat", label: "Player Chat" },
-  { value: "player_team_switch", label: "Player Team Switch" },
+  { value: "periodic", label: "Periodic (interval-based)" },
 ];
 
 const LOGICAL_OPERATORS = [
@@ -55,8 +55,10 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
     id: null,
     name: "",
     description: "",
+    priority: 0,
     enabled: true,
     trigger_event: "player_connected",
+    trigger_interval_seconds: 60,
     logical_operator: "and",
     conditions: [],
     actions: [],
@@ -66,14 +68,16 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
 
   useEffect(() => {
     if (rule) {
-      setFormData(rule);
+      setFormData({ ...formData, ...rule, priority: rule.priority ?? 0, trigger_interval_seconds: rule.trigger_interval_seconds ?? 60 });
     } else {
       setFormData({
         id: null,
         name: "",
         description: "",
+        priority: 0,
         enabled: true,
         trigger_event: "player_connected",
+        trigger_interval_seconds: 60,
         logical_operator: "and",
         conditions: [],
         actions: [],
@@ -84,7 +88,10 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
   }, [rule, open]);
 
   const handleChange = (field) => (event) => {
-    setFormData({ ...formData, [field]: event.target.value });
+    const value = event.target.type === "number"
+      ? parseInt(event.target.value) || 0
+      : event.target.value;
+    setFormData({ ...formData, [field]: value });
   };
 
   const handleSwitchChange = (field) => (event) => {
@@ -224,20 +231,34 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 variant="outlined"
                 placeholder="Optional description of what this rule does"
               />
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={formData.enabled}
-                    onChange={handleSwitchChange("enabled")}
-                    color="primary"
-                  />
-                }
-                label={
-                  <Typography variant="body2">
-                    {formData.enabled ? "Rule is active" : "Rule is inactive"}
-                  </Typography>
-                }
-              />
+              <Stack direction="row" spacing={2} alignItems="center">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={formData.enabled}
+                      onChange={handleSwitchChange("enabled")}
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2">
+                      {formData.enabled ? "Rule is active" : "Rule is inactive"}
+                    </Typography>
+                  }
+                />
+                <TextField
+                  label="Priority"
+                  type="number"
+                  value={formData.priority}
+                  onChange={(e) =>
+                    setFormData({ ...formData, priority: parseInt(e.target.value) || 0 })
+                  }
+                  inputProps={{ min: 0 }}
+                  helperText="Higher priority rules execute first"
+                  size="small"
+                  sx={{ width: 200 }}
+                />
+              </Stack>
             </Stack>
           </Paper>
 
@@ -260,6 +281,24 @@ const RuleDialog = ({ open, rule, onClose, onSave }) => {
                 ))}
               </Select>
             </FormControl>
+            {formData.trigger_event === "periodic" && (
+              <TextField
+                label="Trigger Interval (seconds)"
+                type="number"
+                value={formData.trigger_interval_seconds}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    trigger_interval_seconds: parseInt(e.target.value) || 60,
+                  })
+                }
+                inputProps={{ min: 10 }}
+                helperText="How often to evaluate this rule (minimum 10 seconds)"
+                size="small"
+                fullWidth
+                sx={{ mt: 2 }}
+              />
+            )}
           </Paper>
 
           {/* Conditions */}

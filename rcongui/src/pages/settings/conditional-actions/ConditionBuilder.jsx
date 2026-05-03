@@ -39,6 +39,8 @@ const CONDITION_FIELDS = [
   { value: "team_player_count", label: "Team Player Count", type: "number" },
   { value: "map_name", label: "Map Name", type: "string" },
   { value: "match_time_remaining", label: "Match Time Remaining (seconds)", type: "number" },
+  { value: "message_content", label: "Chat Message Content", type: "string" },
+  { value: "message_scope", label: "Chat Message Scope (team/unit/all)", type: "string" },
 ];
 
 const COMPARISON_OPERATORS = {

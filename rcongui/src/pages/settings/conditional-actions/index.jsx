@@ -1,11 +1,11 @@
-import { Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Await, defer, useLoaderData, useSubmit, useRevalidator } from "react-router-dom";
 import { cmd } from "@/utils/fetchUtils";
 import { AsyncClientError } from "@/components/shared/AsyncClientError";
 import {
   Box,
   Button,
-  Paper,
+  ButtonGroup,
   Skeleton,
   Stack,
   Typography,
@@ -13,24 +13,23 @@ import {
   Chip,
   Alert,
   AlertTitle,
+  Checkbox,
   Switch,
   FormControlLabel,
   Card,
   CardContent,
-  CardHeader,
-  Divider,
   Tooltip,
+  useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PauseIcon from "@mui/icons-material/Pause";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import RuleIcon from "@mui/icons-material/Rule";
 import { DataGrid } from "@mui/x-data-grid";
 import { toast } from "react-toastify";
 import RuleDialog from "./RuleDialog";
+
+const Editor = lazy(() => import("@monaco-editor/react"));
 
 export const loader = async () => {
   const config = cmd.GET_CONDITIONAL_ACTIONS_CONFIG();
@@ -53,18 +52,54 @@ const ConditionalActionsPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [mode, setMode] = useState("visual");
+  const [editorContent, setEditorContent] = useState("");
+  const [editorError, setEditorError] = useState(null);
+  const theme = useTheme();
 
   useEffect(() => {
     if (data.config) {
       data.config.then((cfg) => {
         setConfig(cfg);
+        setEditorContent(JSON.stringify(cfg, null, 2));
       });
     }
   }, [data.config]);
 
+  const updateMode = (newMode) => {
+    if (newMode === "visual") {
+      // Parse editor content back to config
+      try {
+        const parsed = JSON.parse(editorContent);
+        setConfig(parsed);
+        setEditorError(null);
+      } catch (e) {
+        setEditorError("Invalid JSON: " + e.message);
+        return; // Don't switch mode if JSON is invalid
+      }
+    } else {
+      // Serialize config to editor content
+      setEditorContent(JSON.stringify(config, null, 2));
+      setEditorError(null);
+    }
+    setMode(newMode);
+  };
+
+  const handleSaveFromCode = () => {
+    try {
+      const parsed = JSON.parse(editorContent);
+      setEditorError(null);
+      handleSaveConfig(parsed);
+    } catch (e) {
+      setEditorError("Invalid JSON: " + e.message);
+      toast.error("Invalid JSON — please fix the syntax error");
+    }
+  };
+
   const handleSaveConfig = (newConfig) => {
     submit(newConfig, { method: "post", encType: "application/json" });
     setConfig(newConfig);
+    setEditorContent(JSON.stringify(newConfig, null, 2));
     toast.success("Configuration saved successfully!");
   };
 
@@ -117,6 +152,13 @@ const ConditionalActionsPage = () => {
 
   const columns = [
     {
+      field: "priority",
+      headerName: "Priority",
+      width: 80,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
       field: "enabled",
       headerName: "Status",
       width: 100,
@@ -137,7 +179,14 @@ const ConditionalActionsPage = () => {
       flex: 1,
       minWidth: 220,
       renderCell: (params) => (
-        <Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            height: '100%',
+          }}
+        >
           <Typography variant="body2" fontWeight={500}>
             {params.value}
           </Typography>
@@ -212,13 +261,17 @@ const ConditionalActionsPage = () => {
     },
     {
       field: "edit",
-      headerName: "Actions",
+      headerName: "",
       width: 120,
       align: "center",
       headerAlign: "center",
       sortable: false,
       renderCell: (params) => (
-        <Stack direction="row" spacing={0.5}>
+        <Stack
+          direction="row"
+          spacing={0.5}
+          sx={{ height: '100%', alignItems: 'center', justifyContent: 'center' }}
+        >
           <Tooltip title="Edit rule">
             <IconButton
               size="small"
@@ -251,79 +304,67 @@ const ConditionalActionsPage = () => {
     })) || [];
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Stack spacing={3}>
-        {/* Header Card */}
-        <Card elevation={3}>
-          <CardHeader
-            avatar={<RuleIcon color="primary" fontSize="large" />}
-            title={
-              <Typography variant="h4" component="h1">
-                Conditional Actions
-              </Typography>
-            }
-            subheader="Create automated rules that trigger actions based on player and game conditions"
-            action={
-              <Stack direction="row" spacing={2} alignItems="center">
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={config?.enabled || false}
-                      onChange={handleToggleSystem}
-                      disabled={!config}
-                      color="primary"
-                      size="medium"
-                    />
-                  }
-                  label={
-                    <Chip
-                      label={config?.enabled ? "Enabled" : "Disabled"}
-                      color={config?.enabled ? "primary" : "default"}
-                      size="small"
-                    />
-                  }
-                />
-                <Button
-                  variant="contained"
-                  size="large"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddRule}
+    <Stack direction="column" spacing={4}>
+      {/* Header: title + Visual/Code toggle (matches [configs]/detail.jsx pattern) */}
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Typography variant="h3">Conditional Actions</Typography>
+        <ButtonGroup variant="outlined">
+          <Button
+            variant={mode === "visual" ? "contained" : "outlined"}
+            onClick={() => updateMode("visual")}
+          >
+            Visual
+          </Button>
+          <Button
+            variant={mode === "code" ? "contained" : "outlined"}
+            onClick={() => updateMode("code")}
+          >
+            Code
+          </Button>
+        </ButtonGroup>
+      </Stack>
+
+      <Stack spacing={2}>
+        {/* Enable toggle + Add Rule (only in visual mode) */}
+        {mode === "visual" && (
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={config?.enabled || false}
+                  onChange={handleToggleSystem}
                   disabled={!config}
-                  sx={{ minWidth: 140 }}
-                >
-                  Add Rule
-                </Button>
-              </Stack>
-            }
-          />
-        </Card>
+                  color="primary"
+                />
+              }
+              label="Enable"
+            />
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={handleAddRule}
+              disabled={!config}
+            >
+              Add Rule
+            </Button>
+          </Stack>
+        )}
 
-        {/* Info Alert */}
-        <Alert
-          severity="info"
-          icon={<InfoOutlinedIcon />}
-          sx={{
-            borderRadius: 2,
-            '& .MuiAlert-message': { width: '100%' }
-          }}
-        >
-          <AlertTitle sx={{ fontWeight: 600 }}>How it works</AlertTitle>
-          <Typography variant="body2">
-            Rules are evaluated when specific events occur (player connect/disconnect, kills, match start/end, etc.).
-            When all conditions match according to the logical operator, the configured actions are executed automatically.
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            <strong>Tip:</strong> Use the "always_true" condition field to create unconditional actions that execute for all players.
-          </Typography>
-        </Alert>
+        {/* Validation errors (code mode) */}
+        {editorError && (
+          <Alert severity="error" onClose={() => setEditorError(null)}>
+            <AlertTitle>Invalid JSON</AlertTitle>
+            {editorError}
+          </Alert>
+        )}
 
-        {/* Rules Table */}
+        {/* Rules Table (Visual) or JSON Editor (Code) */}
         <Suspense fallback={<ConfigSkeleton />}>
           <Await
             resolve={data.config}
             errorElement={<AsyncClientError title={"Conditional Actions Config"} />}
           >
-            {() => (
+            {() => mode === "visual" ? (
               <Card elevation={2}>
                 <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
                   <DataGrid
@@ -355,6 +396,50 @@ const ConditionalActionsPage = () => {
                   />
                 </CardContent>
               </Card>
+            ) : (
+              <Card elevation={2}>
+                <CardContent>
+                  <Stack spacing={2}>
+                    <Alert severity="info" icon={<InfoOutlinedIcon />}>
+                      <AlertTitle>Code mode</AlertTitle>
+                      Edit the full configuration as JSON. Be careful — invalid JSON or invalid structure will be rejected on save.
+                    </Alert>
+                    <Suspense fallback={<Skeleton height={500} />}>
+                      <Editor
+                        height="70vh"
+                        defaultLanguage="json"
+                        value={editorContent}
+                        theme={theme.palette.mode === "dark" ? "vs-dark" : "vs-light"}
+                        onChange={(value) => setEditorContent(value || "")}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 13,
+                          tabSize: 2,
+                          formatOnPaste: true,
+                          scrollBeyondLastLine: false,
+                        }}
+                      />
+                    </Suspense>
+                    <Stack direction="row" spacing={1} justifyContent="flex-end">
+                      <Button
+                        variant="outlined"
+                        onClick={() => {
+                          setEditorContent(JSON.stringify(config, null, 2));
+                          setEditorError(null);
+                        }}
+                      >
+                        Reset
+                      </Button>
+                      <Button
+                        variant="contained"
+                        onClick={handleSaveFromCode}
+                      >
+                        Save JSON
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
             )}
           </Await>
         </Suspense>
@@ -370,7 +455,7 @@ const ConditionalActionsPage = () => {
           onSave={handleSaveRule}
         />
       )}
-    </Box>
+    </Stack>
   );
 };
 

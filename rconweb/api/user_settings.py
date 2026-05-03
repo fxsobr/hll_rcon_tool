@@ -11,6 +11,7 @@ from rcon.user_config.auto_mod_solo_tank import AutoModNoSoloTankUserConfig
 from rcon.user_config.ban_tk_on_connect import BanTeamKillOnConnectUserConfig
 from rcon.user_config.camera_notification import CameraNotificationUserConfig
 from rcon.user_config.chat_commands import ChatCommandsUserConfig
+from rcon.user_config.conditional_actions import ConditionalActionsUserConfig
 from rcon.user_config.expired_vips import ExpiredVipsUserConfig
 from rcon.user_config.gtx_server_name import GtxServerNameChangeUserConfig
 from rcon.user_config.log_line_webhooks import LogLineWebhookUserConfig
@@ -529,6 +530,19 @@ def describe_watch_killrate_config(request):
 
     return api_response(
         result=WatchKillRateUserConfig.model_json_schema(),
+        command=command_name,
+        failed=False,
+    )
+
+
+@csrf_exempt
+@login_required()
+@require_http_methods(["GET"])
+def describe_conditional_actions_config(request):
+    command_name = "describe_conditional_actions_config"
+
+    return api_response(
+        result=ConditionalActionsUserConfig.model_json_schema(),
         command=command_name,
         failed=False,
     )

@@ -68,8 +68,11 @@ const ACTION_TYPES = [
   },
   {
     value: "broadcast_message",
-    label: "Set Broadcast Message",
-    params: [{ name: "message", label: "Message", type: "text", required: true }],
+    label: "Broadcast Message",
+    params: [
+      { name: "message", label: "Message", type: "text", required: true },
+      { name: "duration_seconds", label: "Duration (seconds)", type: "number", required: false, default: 300 },
+    ],
   },
   {
     value: "temporary_broadcast",
@@ -92,6 +95,61 @@ const ACTION_TYPES = [
     label: "Switch Player Team",
     params: [],
   },
+  {
+    value: "broadcast_match_summary",
+    label: "Broadcast Match Summary (Leaderboard)",
+    params: [
+      { name: "top_count", label: "Top N Players Per Category", type: "number", required: false, default: 5 },
+      { name: "categories", label: "Categories (comma-separated: kills,deaths,combat,offense,defense,support or 'all')", type: "text", required: false, default: "kills,support,combat,offense,defense" },
+      { name: "header_message", label: "Header Message (shown before leaderboard)", type: "text", required: false },
+      { name: "footer_message", label: "Footer Message (shown after leaderboard)", type: "text", required: false },
+      { name: "label_kills", label: "Label: Kills Category", type: "text", required: false, default: "Top Kills" },
+      { name: "label_deaths", label: "Label: Deaths Category", type: "text", required: false, default: "Most Deaths" },
+      { name: "label_combat", label: "Label: Combat Category", type: "text", required: false, default: "Top Combat" },
+      { name: "label_offense", label: "Label: Offense Category", type: "text", required: false, default: "Top Offense" },
+      { name: "label_defense", label: "Label: Defense Category", type: "text", required: false, default: "Top Defense" },
+      { name: "label_support", label: "Label: Support Category", type: "text", required: false, default: "Top Support" },
+    ],
+  },
+  {
+    value: "broadcast_role_leaderboard",
+    label: "Broadcast Role Leaderboard (Best per Class)",
+    params: [
+      { name: "roles", label: "Roles (comma-separated or 'all')", type: "text", required: false, default: "officer,medic,engineer,sniper,tankcommander,antitank,assault" },
+      { name: "header_message", label: "Header Message", type: "text", required: false },
+      { name: "footer_message", label: "Footer Message", type: "text", required: false },
+      { name: "label_officer", label: "Label: Officer", type: "text", required: false, default: "Best Officer" },
+      { name: "label_medic", label: "Label: Medic", type: "text", required: false, default: "Best Medic" },
+      { name: "label_engineer", label: "Label: Engineer", type: "text", required: false, default: "Best Engineer" },
+      { name: "label_sniper", label: "Label: Sniper", type: "text", required: false, default: "Best Sniper" },
+      { name: "label_tank", label: "Label: Tank Commander", type: "text", required: false, default: "Best Tank Commander" },
+      { name: "label_antitank", label: "Label: Anti-Tank", type: "text", required: false, default: "Best Anti-Tank" },
+      { name: "label_assault", label: "Label: Assault", type: "text", required: false, default: "Best Assault" },
+      { name: "label_commander", label: "Label: Commander", type: "text", required: false, default: "Best Commander" },
+    ],
+  },
+  {
+    value: "broadcast_squad_leaderboard",
+    label: "Broadcast Squad Leaderboard (Best Squads)",
+    params: [
+      { name: "top_count", label: "Top N Squads", type: "number", required: false, default: 3 },
+      { name: "sort_by", label: "Sort by (kills, combat, support, offense, defense)", type: "text", required: false, default: "kills" },
+      { name: "header_message", label: "Header Message", type: "text", required: false },
+      { name: "footer_message", label: "Footer Message", type: "text", required: false },
+    ],
+  },
+  {
+    value: "broadcast_seasonal_leaderboard",
+    label: "Broadcast Seasonal Leaderboard (Cross-Match)",
+    params: [
+      { name: "season_name", label: "Season Name", type: "text", required: false, default: "Season 1" },
+      { name: "season_days", label: "Season Duration (days, 0 = no expiry)", type: "number", required: false, default: 30 },
+      { name: "top_count", label: "Top N Players", type: "number", required: false, default: 10 },
+      { name: "sort_by", label: "Sort by (kills, combat, support)", type: "text", required: false, default: "kills" },
+      { name: "header_message", label: "Header Message", type: "text", required: false },
+      { name: "footer_message", label: "Footer Message", type: "text", required: false },
+    ],
+  },
 ];
 
 const ActionBuilder = ({ action, onChange, onDelete }) => {
@@ -104,8 +162,10 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
     
     const newParameters = {};
     newActionDef?.params.forEach((param) => {
-      if (param.type === "number") {
-        newParameters[param.name] = param.default || 0;
+      if (param.default !== undefined) {
+        newParameters[param.name] = param.default;
+      } else if (param.type === "number") {
+        newParameters[param.name] = 0;
       } else {
         newParameters[param.name] = "";
       }
@@ -196,7 +256,7 @@ const ActionBuilder = ({ action, onChange, onDelete }) => {
               <TextField
                 key={param.name}
                 label={param.label}
-                value={action.parameters?.[param.name] || ""}
+                value={action.parameters?.[param.name] ?? ""}
                 onChange={handleParameterChange(param.name)}
                 type={param.type === "number" ? "number" : "text"}
                 required={param.required}
